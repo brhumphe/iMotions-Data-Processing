@@ -2,6 +2,7 @@ SELECT
   Name,
   Age,
   Gender,
+  PostMarker,
 --   Timestamp,
   Timestamp / 1000 AS "Timestamp",
   avg(Classification)  AS "Classification",
