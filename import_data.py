@@ -8,15 +8,15 @@ conn = sqlite3.connect("data.db")
 db = conn.cursor()
 
 # Get file paths of files in ./data/
-files = glob.glob("data/EEG/*.txt")
+files = glob.glob("data/**/*.txt")
 print(files)
 
 
 # Execute a script which will eliminate rows with bad data and insert the
 # desired columns into a new table named `data`
-def run_sql(file, connection):
-    print("Executing ", file)
-    fd = open(file, 'r', encoding='utf-8')
+def run_sql(sql_file, connection):
+    print("Executing ", sql_file)
+    fd = open(sql_file, 'r', encoding='utf-8')
     sql_file = fd.read()
     fd.close()
     connection.executescript(sql_file)
@@ -225,4 +225,7 @@ for file in files:
         # already exist
         # chunk = chunk.reindex(columns=selected_columns)
         chunk.to_sql('all_raw', conn, if_exists='append')
-    run_sql('sel/EEG.sql', connection=conn)
+    run_sql('sql/EEG.sql', connection=conn)
+
+run_sql('sql/Participants.sql', connection=conn)
+run_sql('sql/PostMarkers.sql', connection=conn)

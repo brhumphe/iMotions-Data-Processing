@@ -1,4 +1,5 @@
 # Project-specific stuff
 data/*
 venv/
-.idea/
+.idea
+/data.db
