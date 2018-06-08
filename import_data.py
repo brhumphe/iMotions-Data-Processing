@@ -228,4 +228,3 @@ for file in files:
     run_sql('sql/EEG.sql', connection=conn)
 
 run_sql('sql/Participants.sql', connection=conn)
-run_sql('sql/PostMarkers.sql', connection=conn)
