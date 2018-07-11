@@ -4,11 +4,11 @@ import sqlite3
 import pandas as pd
 
 # Create database connection
-conn = sqlite3.connect("data.db")
+conn = sqlite3.connect("scarcity_pilot.db")
 db = conn.cursor()
 
 # Get file paths of files in ./data/
-files = glob.glob("data/**/*.txt")
+files = glob.glob("data/Scarcity/*.txt")
 print(files)
 
 
@@ -57,8 +57,9 @@ selected_columns = [
     # 'CameraRightY',
 
     # Whether the eye is being tracked. 0 if data is valid.
-    # 'ValidityLeft',
-    # 'ValidityRight',
+    # ET Validity
+    'ValidityLeft',
+    'ValidityRight',
 
     # Eye tracker constructs
     # 'GazeX',
@@ -71,12 +72,14 @@ selected_columns = [
     # 'SaccadeSeq',
     # 'SaccadeStart',
     # 'SaccadeDuration',
-    # 'FixationSeq',
+
+    # ET Fixations
+    'FixationSeq',
     # 'FixationX',
     # 'FixationY',
-    # 'FixationStart',
-    # 'FixationDuration',
-    # 'FixationAOI',
+    'FixationStart',
+    'FixationDuration',
+    'FixationAOI',
 
     # PostMarkers are added in iMotions to identify interesting time segments
     'PostMarker',
@@ -84,7 +87,7 @@ selected_columns = [
     # 'Epoc',
     # 'SDKTimeStamp',
 
-    # ABM EEG constructs
+    # ABMBrainState
     'Classification',
     'HighEngagement',
     'LowEngagement',
@@ -94,7 +97,7 @@ selected_columns = [
     'WorkloadBDS',
     'WorkloadAverage',
 
-    # ABM EEG raw data
+    # ABMDeconEEG
     # 'Epoc (Decon)',
     # 'Offset (Decon)',
     # 'SDKTimeStamp (Decon)',
@@ -108,6 +111,8 @@ selected_columns = [
     # 'F4 (Decon)',
     # 'P3 (Decon)',
     # 'P4 (Decon)',
+
+    # ABMRawEEG
     # 'Epoc (Raw)',
     # 'Offset (Raw)',
     # 'SDKTimeStamp (Raw)',
@@ -214,7 +219,7 @@ for file in files:
     i += 1
     reader = pd.read_csv(file, sep='\t', encoding='utf-8', chunksize=10000,
                          comment='#', skip_blank_lines=True
-                         , usecols=selected_columns
+                         # , usecols=selected_columns
                          )
 
     # Iterate through file with pandas and write to database. Doing
@@ -224,7 +229,7 @@ for file in files:
         # Write raw data to database. Will create the table if it does not
         # already exist
         # chunk = chunk.reindex(columns=selected_columns)
-        chunk.to_sql('all_raw', conn, if_exists='append')
-    run_sql('sql/EEG.sql', connection=conn)
+        chunk.to_sql('aoi_data', conn, if_exists='append')
+    # run_sql('sql/EEG.sql', connection=conn)
 
-run_sql('sql/Participants.sql', connection=conn)
+# run_sql('sql/Participants.sql', connection=conn)
