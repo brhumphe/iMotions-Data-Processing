@@ -15,41 +15,33 @@ Opens file at path, skipping all commented and empty lines before the csv table 
         yield from lines
 
 
-# TODO: Rewrite to be inclusive instead of exclusive
-def remove_events(rows, remove):
-    """
-Returns rows which contain events besides those in remove.
-    :param rows: An iterable of dicts from a data file with the 'EventSource' key
-    :param remove: List of events which should be ignored.
-    """
+def include_events(rows, event_names):
+    include = set(event_names)
     for row in rows:
-        row_source__split = row['EventSource'].split('|')
-        for r in remove:
-            if r in row_source__split:
-                row_source__split.remove(r)
-
-        # Yield only lines that have remaining events
-        if row_source__split:
+        row_events = row['EventSource'].split('|')
+        if len(include.intersection(row_events)) > 0:
             yield row
 
 
-def filter_rows(rows, remove):
+def filter_rows(rows, events):
     """
-Returns rows with valid data
-    :param rows: 
-    :param remove: 
+Parses rows from a csv and yields rows with the desired events.
+    :param rows: Iterator of strings from a csv file, including headers.
+    :param events: Names of events to include. Only rows with at least one of the events
+                    in the list will be returned.
     :return: 
     """
     reader = csv.DictReader(rows, delimiter='\t')
     test_slides = (line for line in reader if line['SlideType'] == 'TestImage')
-    events = remove_events(test_slides, remove)
-    return events
+    yield from include_events(test_slides, events)
 
 
 if __name__ == '__main__':
     file_path = 'sample_data/059_230.txt'
     data = skip_comments(file_path)
-    filtered = filter_rows(data, ['ABMRawEEG', 'ABMDeconEEG'])
+    filtered = filter_rows(data, ['ABMBrainState'])
 
     for f in filtered:
-        print(f)
+        cols = ['Name', 'Age', 'Gender', 'StimulusName', 'EventSource', 'Classification']
+        subset = {col: f[col] for col in cols if col in f}
+        print(subset)
