@@ -4,11 +4,13 @@ import sqlite3
 import pandas as pd
 
 # Create database connection
-conn = sqlite3.connect("scarcity_pilot.db")
+# conn = sqlite3.connect(":memory:")
+conn = sqlite3.connect("test_1_1.db")
 db = conn.cursor()
 
 # Get file paths of files in ./data/
-files = glob.glob("data/Scarcity/*.txt")
+files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\ToL/*.txt")
+# files = ['D:\\Adidas 1.1\\adidas 1.11\WMC\\002_202.txt']
 print(files)
 
 
@@ -25,7 +27,7 @@ def run_sql(sql_file, connection):
 # This list of columns is obtained with the code in get_columns.py
 selected_columns = [
     # Study and participant data
-    # 'StudyName',
+    'StudyName',
     # 'ExportDate',
     'Name',
     'Age',
@@ -210,14 +212,14 @@ selected_columns = [
     # 'SceneType',
     # 'SceneOutput',
     # 'SceneParent'
-    ]
+]
 
 i = 1
 total = len(files)
 for file in files:
     print(i, '/', total, " : ", file)
     i += 1
-    reader = pd.read_csv(file, sep='\t', encoding='utf-8', chunksize=10000,
+    reader = pd.read_csv(file, sep='\t', encoding='utf-8', chunksize=100000,
                          comment='#', skip_blank_lines=True
                          # , usecols=selected_columns
                          )
@@ -225,11 +227,12 @@ for file in files:
     # Iterate through file with pandas and write to database. Doing
     # this via pandas is not the most efficient way, though using `usecols=`
     # speeds the process up significantly.
-    for chunk in reader:
+    for i, chunk in enumerate(reader):
         # Write raw data to database. Will create the table if it does not
         # already exist
         # chunk = chunk.reindex(columns=selected_columns)
-        chunk.to_sql('aoi_data', conn, if_exists='append')
-    # run_sql('sql/EEG.sql', connection=conn)
+        print('Processing chunk', i + 1, 'from ', file)
+        chunk.to_sql('all_raw', conn, if_exists='append')
+    run_sql('sql/EEG.sql', connection=conn)
 
-# run_sql('sql/Participants.sql', connection=conn)
+run_sql('sql/Participants.sql', connection=conn)
