@@ -1,6 +1,5 @@
-from itertools import filterfalse, islice, dropwhile
 import csv
-from pprint import pprint
+from itertools import dropwhile
 
 
 def remove_events(events, remove):
@@ -21,18 +20,22 @@ def filter_rows(lines, remove):
     return events
 
 
-def parse_export(path, remove=None):
-    if remove is None:
-        remove = ['ABMRawEEG', 'ABMDeconEEG']
-
+def read_data(path):
+    """
+Opens file at path, skipping all commented and empty lines before the csv table header.
+    :param path:
+    """
     with open(path, encoding='utf-8') as file:
         body = dropwhile(lambda x: str.startswith(x, '#'), file)
         lines = (s.rstrip() for s in body if s.rstrip())
 
-        yield from (filter_rows(lines, remove))
+        yield from lines
 
 
 file_path = 'sample_data/059_230.txt'
 
-for e in parse_export(file_path):
-    print(e)
+reader = read_data(file_path)
+filtered = filter_rows(reader, ['ABMRawEEG', 'ABMDeconEEG'])
+
+for f in filtered:
+    print(f)
