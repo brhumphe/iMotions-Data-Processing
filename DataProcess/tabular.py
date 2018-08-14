@@ -1,5 +1,8 @@
 import csv
+import glob
+import os
 from itertools import dropwhile
+from multiprocessing import Pool
 
 
 def skip_comments(path, prefix='#'):
@@ -36,12 +39,36 @@ Parses rows from a csv and yields rows with the desired events.
     yield from include_events(test_slides, events)
 
 
+def process_file(path, outdir='out/'):
+    data = skip_comments(path)
+    filtered = filter_rows(data, ['ABMBrainState'])
+    try:
+        first = next(filtered)
+
+        base = os.path.basename(path)
+        path = outdir + os.path.splitext(base)[0] + '.csv'
+        print('Parsing', base)
+        with open(path, 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=first.keys())
+            writer.writeheader()
+            writer.writerow(first)
+
+            writer.writerows(filtered)
+    except StopIteration as e:
+        print("FAILED TO PARSE ", path, e)
+
+
 if __name__ == '__main__':
     file_path = 'sample_data/059_230.txt'
-    data = skip_comments(file_path)
-    filtered = filter_rows(data, ['ABMBrainState'])
+    files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\ToL/*.txt")
+    outdir = 'out/'
 
-    for f in filtered:
-        cols = ['Name', 'Age', 'Gender', 'StimulusName', 'EventSource', 'Classification']
-        subset = {col: f[col] for col in cols if col in f}
-        print(subset)
+    pool = Pool()
+    pool.map(process_file, files)
+    # for file_path in files:
+    #     process_file(file_path)
+
+        # for f in filtered:
+        #     cols = ['Name', 'Age', 'Gender', 'StimulusName', 'EventSource', 'Classification']
+        #     subset = {col: f[col] for col in cols if col in f}
+        #     print(subset)
