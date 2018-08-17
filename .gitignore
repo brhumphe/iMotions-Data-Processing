@@ -4,3 +4,4 @@ venv/
 .idea
 *.db
 out/
+*.log

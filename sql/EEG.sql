@@ -1,10 +1,12 @@
---DROP TABLE IF EXISTS eeg;
+-- DROP TABLE IF EXISTS eeg;
 CREATE TABLE IF NOT EXISTS eeg (
     "index"         INTEGER,
+    StudyName       TEXT,
     Name            INTEGER,
     Age             INTEGER,
     Gender          TEXT,
     Timestamp       TEXT,
+    StimulusName    TEXT,
     PostMarker      TEXT,
     Classification  NUMERIC,
     HighEngagement  FLOAT,
@@ -20,10 +22,12 @@ CREATE TABLE IF NOT EXISTS eeg (
 INSERT INTO eeg
     SELECT
         "index",
+        StudyName,
         Name,
         Age,
         Gender,
         Timestamp,
+        StimulusName,
         PostMarker,
         Classification,
         HighEngagement,

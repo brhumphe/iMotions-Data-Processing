@@ -1,27 +1,38 @@
 import glob
 import sqlite3
-
+import time
 import pandas as pd
+import logging
+
+logging.basicConfig(filename="import_data.log",
+                    level=logging.DEBUG
+                    # ,
+                    # format="%(asctime)s:%(levelname)s:%(message)s"
+                    )
+
+# files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\ToL/*.txt")
+# files = glob.glob("D:\\Adidas 1.1\\02_A_adidas 1.11 ToL/*.txt")
+files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\WMC/*.txt")
+logging.debug("Files: %s", files)
 
 # Create database connection
 # conn = sqlite3.connect(":memory:")
-conn = sqlite3.connect("test_1_1.db")
+database = "WMC.db"
+conn = sqlite3.connect(database)
 db = conn.cursor()
-
-# Get file paths of files in ./data/
-files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\ToL/*.txt")
-# files = ['D:\\Adidas 1.1\\adidas 1.11\WMC\\002_202.txt']
-print(files)
+logging.debug("Connected to %s", database)
 
 
-# Execute a script which will eliminate rows with bad data and insert the
-# desired columns into a new table named `data`
 def run_sql(sql_file, connection):
     print("Executing ", sql_file)
-    fd = open(sql_file, 'r', encoding='utf-8')
-    sql_file = fd.read()
-    fd.close()
-    connection.executescript(sql_file)
+    logging.debug("Executing %s", sql_file)
+    try:
+        fd = open(sql_file, 'r', encoding='utf-8')
+        sql_file = fd.read()
+        fd.close()
+        connection.executescript(sql_file)
+    except:
+        logging.exception("Failed to run %s", sql_file)
 
 
 # This list of columns is obtained with the code in get_columns.py
@@ -60,8 +71,8 @@ selected_columns = [
 
     # Whether the eye is being tracked. 0 if data is valid.
     # ET Validity
-    'ValidityLeft',
-    'ValidityRight',
+    # 'ValidityLeft',
+    # 'ValidityRight',
 
     # Eye tracker constructs
     # 'GazeX',
@@ -76,12 +87,12 @@ selected_columns = [
     # 'SaccadeDuration',
 
     # ET Fixations
-    'FixationSeq',
+    # 'FixationSeq',
     # 'FixationX',
     # 'FixationY',
-    'FixationStart',
-    'FixationDuration',
-    'FixationAOI',
+    # 'FixationStart',
+    # 'FixationDuration',
+    # 'FixationAOI',
 
     # PostMarkers are added in iMotions to identify interesting time segments
     'PostMarker',
@@ -213,26 +224,35 @@ selected_columns = [
     # 'SceneOutput',
     # 'SceneParent'
 ]
+logging.debug("Using columns: %s", selected_columns)
 
-i = 1
+start = time.time()
+print('Began at', start)
 total = len(files)
-for file in files:
-    print(i, '/', total, " : ", file)
-    i += 1
-    reader = pd.read_csv(file, sep='\t', encoding='utf-8', chunksize=100000,
-                         comment='#', skip_blank_lines=True
-                         # , usecols=selected_columns
-                         )
+for i, file in enumerate(files):
+    print(i + 1, '/', total, " : ", file)
+    logging.info("Processing %s", file)
 
-    # Iterate through file with pandas and write to database. Doing
-    # this via pandas is not the most efficient way, though using `usecols=`
-    # speeds the process up significantly.
-    for i, chunk in enumerate(reader):
-        # Write raw data to database. Will create the table if it does not
-        # already exist
-        # chunk = chunk.reindex(columns=selected_columns)
-        print('Processing chunk', i + 1, 'from ', file)
-        chunk.to_sql('all_raw', conn, if_exists='append')
-    run_sql('sql/EEG.sql', connection=conn)
+    try:
+        reader = pd.read_csv(file, sep='\t', encoding='utf-8', chunksize=100000,
+                             comment='#', skip_blank_lines=True
+                             , usecols=selected_columns
+                             )
+
+        # Iterate through file with pandas and write to database. Doing
+        # this via pandas is not the most efficient way, though using `usecols=`
+        # speeds the process up significantly.
+        for _, chunk in enumerate(reader):
+            # Write raw data to database. Will create the table if it does not
+            # already exist
+            # chunk = chunk.reindex(columns=selected_columns)
+            # print('Processing chunk', i + 1, 'from ', file)
+            chunk.to_sql('all_raw', conn, if_exists='append')
+        run_sql('sql/EEG.sql', connection=conn)
+    except ValueError as e:
+        print("Failed to process", file)
+        logging.exception("Failed to process %s", file)
 
 run_sql('sql/Participants.sql', connection=conn)
+end = time.time()
+print('Total time:', (end - start) / 60, 'minutes')

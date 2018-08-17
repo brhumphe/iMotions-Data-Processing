@@ -8,7 +8,7 @@ CREATE TABLE Participants
         REFERENCES eeg (Name),
     Age       INTEGER,
     Gender    TEXT,
-    Condition INTEGER
+    StudyName TEXT
 )
 ;
 
@@ -21,9 +21,6 @@ INSERT INTO Participants
         Name
         , Age
         , Gender
-        , CASE WHEN Name LIKE '1%'
-        THEN 1
-          ELSE 2
-          END AS Condition
+        , StudyName
     FROM eeg
     ORDER BY Name

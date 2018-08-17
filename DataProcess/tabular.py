@@ -1,4 +1,5 @@
 import csv
+import glob
 import os
 from itertools import dropwhile
 import dataset
@@ -63,7 +64,7 @@ Process the given file and saves it to outdir as a csv
         path = outdir + os.path.splitext(base)[0] + '.csv'
         print('Parsing', base)
         with open(path, 'w', newline='') as file:
-            writer = csv.DictWriter(file, fieldnames=first.keys())
+            writer = csv.DictWriter(file, fieldnames=first.keys(), extrasaction='ignore')
             writer.writeheader()
             writer.writerow(first)
 
@@ -90,8 +91,8 @@ Process given file and saves the output to the specified database file.
 
 
 if __name__ == '__main__':
-    file_path = 'sample_data/059_230.txt'
-    # files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\ToL/*.txt")
+    # file_path = 'sample_data/059_230.txt'
+    files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\WMC\*.txt")
     outdir = 'out/'
     selected_columns = [
         # Study and participant data
@@ -125,4 +126,7 @@ if __name__ == '__main__':
         'WorkloadAverage',
     ]
     # process_file_to_csv(file_path, columns=selected_columns)
-    process_file_to_db(file_path, 'sample.db', ['ABMBrainState'], 'eeg', columns=selected_columns)
+    # process_file_to_db(file_path, 'sample.db', ['ABMBrainState'], 'eeg', columns=selected_columns)
+    for file in files:
+        print('Processing:', file)
+        process_file_to_db(file, 'WMC.db', ['ABMBrainState'], 'eeg', selected_columns)
