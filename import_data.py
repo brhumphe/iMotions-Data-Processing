@@ -5,22 +5,9 @@ import pandas as pd
 import logging
 
 logging.basicConfig(filename="import_data.log",
-                    level=logging.DEBUG
-                    # ,
-                    # format="%(asctime)s:%(levelname)s:%(message)s"
+                    level=logging.DEBUG,
+                    format="%(levelname)s|%(asctime)s|%(message)s"
                     )
-
-# files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\ToL/*.txt")
-# files = glob.glob("D:\\Adidas 1.1\\02_A_adidas 1.11 ToL/*.txt")
-files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\WMC/*.txt")
-logging.debug("Files: %s", files)
-
-# Create database connection
-# conn = sqlite3.connect(":memory:")
-database = "WMC.db"
-conn = sqlite3.connect(database)
-db = conn.cursor()
-logging.debug("Connected to %s", database)
 
 
 def run_sql(sql_file, connection):
@@ -34,6 +21,29 @@ def run_sql(sql_file, connection):
     except:
         logging.exception("Failed to run %s", sql_file)
 
+
+def process_file(file, connection):
+    logging.info('Processing file %s', file)
+    try:
+        # TODO: Add any pre-user processing SQl scripts here. May not be necessary?
+        # `usecols` speeds this up significantly. Use it.
+        reader = pd.read_csv(file, sep='\t', encoding='utf-8', chunksize=100000,
+                             comment='#', skip_blank_lines=True, usecols=selected_columns)
+
+        # Iterate through file with pandas and write to database.
+        for chunk in reader:
+            chunk.to_sql('all_raw', connection, if_exists='append')
+
+        # Run post-processing scripts to filter data
+        run_sql('sql/EEG.sql', connection=connection)
+        run_sql('sql/cleanup.sql', connection=connection)
+    except ValueError as e:
+        print("Failed to process", file)
+        logging.exception("Failed to process %s", file)
+
+
+files = glob.glob(r"D:\Adidas 1.1\02_B_adidas 1.11 wo ToL\Product centered all/*.txt")
+logging.info("Processing files: %s", files)
 
 # This list of columns is obtained with the code in get_columns.py
 selected_columns = [
@@ -229,29 +239,13 @@ logging.debug("Using columns: %s", selected_columns)
 start = time.time()
 print('Began at', start)
 total = len(files)
-for i, file in enumerate(files):
-    print(i + 1, '/', total, " : ", file)
-    logging.info("Processing %s", file)
+# Create database connection
+database = "PCB_adidas_1_1.db"
+conn = sqlite3.connect(database)
+db = conn.cursor()
+logging.info("Connected to %s", database)
 
-    try:
-        reader = pd.read_csv(file, sep='\t', encoding='utf-8', chunksize=100000,
-                             comment='#', skip_blank_lines=True
-                             , usecols=selected_columns
-                             )
-
-        # Iterate through file with pandas and write to database. Doing
-        # this via pandas is not the most efficient way, though using `usecols=`
-        # speeds the process up significantly.
-        for _, chunk in enumerate(reader):
-            # Write raw data to database. Will create the table if it does not
-            # already exist
-            # chunk = chunk.reindex(columns=selected_columns)
-            # print('Processing chunk', i + 1, 'from ', file)
-            chunk.to_sql('all_raw', conn, if_exists='append')
-        run_sql('sql/EEG.sql', connection=conn)
-    except ValueError as e:
-        print("Failed to process", file)
-        logging.exception("Failed to process %s", file)
+process_file(r"D:\Adidas 1.1\02_B_adidas 1.11 wo ToL\Product-centered baseball/031_221-2_wmc_vids.txt", conn)
 
 run_sql('sql/Participants.sql', connection=conn)
 end = time.time()

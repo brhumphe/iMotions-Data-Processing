@@ -43,6 +43,3 @@ INSERT INTO eeg
         Distraction != -1 AND Drowsy != -1 AND WorkloadFBDS != -1 AND WorkloadBDS != -1 AND WorkloadAverage != -1
         AND SlideType LIKE 'TestImage';
 
--- Delete raw data and purge it from the database with VACUUM
-DELETE FROM all_raw;
-VACUUM;
