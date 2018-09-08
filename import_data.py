@@ -38,6 +38,7 @@ def process_file(file, db_name):
             # TODO: Check for attempts to insert data from an existing participant.
             #       Determine which participant is being inserted. Each time a new participant name is found, check if
             #       they are already in the database.
+            # TODO: Figure out an easy way to delete a specific participant from the database
             run_sql('sql/EEG.sql', connection=connection)
             run_sql('sql/cleanup.sql', connection=connection)
         except ValueError as e:
@@ -46,9 +47,6 @@ def process_file(file, db_name):
 
 
 if __name__ == '__main__':
-    files = glob.glob(r"D:\Adidas 1.1\02_B_adidas 1.11 wo ToL\Product centered all/*.txt")
-    logging.info("Processing files: %s", files)
-
     # This list of columns is obtained with the code in get_columns.py
     selected_columns = [
         # Study and participant data
@@ -242,11 +240,18 @@ if __name__ == '__main__':
 
     start = time.time()
     print('Began at', start)
-    total = len(files)
     # Create database connection
-    db_name = "PCB_adidas_1_1.db"
-    process_file(r"D:\Adidas 1.1\02_B_adidas 1.11 wo ToL\Product-centered baseball/031_221-2_wmc_vids.txt",
-                 db_name)
+    db_name = "ECB_adidas_1_1.db"
+
+    files = glob.glob(r"D:\Adidas 1.1\02_B_adidas 1.11 wo ToL\Experience centered baseball/*.txt")
+    total = len(files)
+    logging.info("Processing files: %s", files)
+    for i, file in enumerate(files, start=1):
+        print(f"Processing file {i}/{total} {file}")
+        logging.info(f"Processing {file}")
+        process_file(file, db_name)
+    # process_file(r"D:\Adidas 1.1\02_B_adidas 1.11 wo ToL\Product-centered baseball/031_221-2_wmc_vids.txt",
+    #              db_name)
 
     # TODO: Refactor this to run inside `process_file`
     conn = sqlite3.connect(db_name)
