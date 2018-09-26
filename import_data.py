@@ -86,7 +86,7 @@ if __name__ == '__main__':
         # 'ValidityLeft',
         # 'ValidityRight',
 
-        # Eye tracker constructs
+        # Eye tracker
         # 'GazeX',
         # 'GazeY',
         # 'GazeAOI',
@@ -235,6 +235,24 @@ if __name__ == '__main__':
         # 'SceneType',
         # 'SceneOutput',
         # 'SceneParent'
+
+        # Event Source AbmPsdData (?)
+        # 'Delta (1-3 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        # 'Delta (1-3 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        # 'Delta (1-3 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+        # 'Theta (4-7 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        # 'Theta (4-7 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        # 'Theta (4-7 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+        # 'Alpha (8-12 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        # 'Alpha (8-12 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        # 'Alpha (8-12 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+        # 'Beta (13-25 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        # 'Beta (13-25 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        # 'Beta (13-25 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+        # 'Gamma (26-40 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        # 'Gamma (26-40 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        # 'Gamma (26-40 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+
     ]
     logging.debug("Using columns: %s", selected_columns)
 
