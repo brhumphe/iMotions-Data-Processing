@@ -3,6 +3,7 @@ import sqlite3
 import time
 import pandas as pd
 import logging
+import sys
 
 logging.basicConfig(filename="import_data.log",
                     level=logging.DEBUG,
@@ -22,7 +23,7 @@ def run_sql(sql_file, connection):
         logging.exception("Failed to run %s", sql_file)
 
 
-def process_file(filename, db_name, post_file_sql=None, post_chunk_sql=None, chunksize=100000):
+def process_file(filename, db_name, columns, post_file_sql=None, post_chunk_sql=None, chunksize=100000):
     if post_chunk_sql is None:
         post_chunk_sql = []
     if post_file_sql is None:
@@ -34,7 +35,7 @@ def process_file(filename, db_name, post_file_sql=None, post_chunk_sql=None, chu
             # `usecols` speeds this up significantly. Use it.
             # TODO: Utilize data type  argument
             reader = pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize,
-                                 comment='#', skip_blank_lines=True, usecols=selected_columns)
+                                 comment='#', skip_blank_lines=True, usecols=columns)
 
             # Iterate through file with pandas and write to database.
             for chunk in reader:
@@ -50,8 +51,9 @@ def process_file(filename, db_name, post_file_sql=None, post_chunk_sql=None, chu
             for sql in post_file_sql:
                 run_sql(sql, connection)
         except ValueError as e:
-            print("Failed to process", filename)
-            logging.exception("Failed to process %s", filename)
+            print("Failed to process", filename, file=sys.stderr)
+            print(e, file=sys.stderr)
+            logging.exception("Failed to process %s\n\t%s", filename, e)
 
 
 if __name__ == '__main__':
@@ -261,7 +263,7 @@ if __name__ == '__main__':
         # 'Gamma (26-40 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
         # 'Gamma (26-40 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
 
-        # Emotiv
+        # Performance Metrics Epoc
         'Stress (Epoc)',
         'Engagement (Epoc)',
         'Relaxation (Epoc)',
@@ -272,7 +274,7 @@ if __name__ == '__main__':
     logging.debug("Using columns: %s", selected_columns)
 
     start = time.time()
-    print('Began at', start)
+    # print('Began at', start)
     # Create database connection
     db_file = "runner_data.db"
 
@@ -282,7 +284,7 @@ if __name__ == '__main__':
     for i, file in enumerate(files, start=1):
         print(f"Processing file {i}/{total} {file}")
         logging.info(f"Processing {file}")
-        process_file(file, db_file)
+        process_file(file, db_file, columns=selected_columns, post_file_sql=[])
 
     end = time.time()
     print('Total time:', (end - start) / 60, 'minutes')
