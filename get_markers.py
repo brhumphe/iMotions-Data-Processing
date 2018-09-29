@@ -7,7 +7,7 @@ db = conn.cursor()
 #     for name in names.split('|'):
 #         print(rowid, name)
 for row, markers in db.execute(
-        """SELECT "index", PostMarker FROM eeg WHERE PostMarker NOTNULL  AND 
+        """SELECT "index", PostMarker FROM abm_eeg WHERE PostMarker NOTNULL  AND 
         PostMarker NOT LIKE '%Setup%'"""):
     for marker in markers.split('|'):
         print(row, marker)

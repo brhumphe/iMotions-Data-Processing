@@ -22,28 +22,36 @@ def run_sql(sql_file, connection):
         logging.exception("Failed to run %s", sql_file)
 
 
-def process_file(file, db_name):
+def process_file(filename, db_name, post_file_sql=None, post_chunk_sql=None, chunksize=100000):
+    if post_chunk_sql is None:
+        post_chunk_sql = []
+    if post_file_sql is None:
+        post_file_sql = ['sql/abm_eeg.sql', 'sql/cleanup.sql']
+
     with sqlite3.connect(db_name) as connection:
-        logging.info('Processing file %s', file)
+        logging.info('Processing file %s', filename)
         try:
             # `usecols` speeds this up significantly. Use it.
-            reader = pd.read_csv(file, sep='\t', encoding='utf-8', chunksize=100000,
+            # TODO: Utilize data type  argument
+            reader = pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize,
                                  comment='#', skip_blank_lines=True, usecols=selected_columns)
 
             # Iterate through file with pandas and write to database.
             for chunk in reader:
                 chunk.to_sql('all_raw', connection, if_exists='append')
+                for sql in post_chunk_sql:
+                    run_sql(sql, connection)
 
             # Run post-processing scripts to filter data
             # TODO: Check for attempts to insert data from an existing participant.
             #       Determine which participant is being inserted. Each time a new participant name is found, check if
             #       they are already in the database.
             # TODO: Figure out an easy way to delete a specific participant from the database
-            run_sql('sql/EEG.sql', connection=connection)
-            run_sql('sql/cleanup.sql', connection=connection)
+            for sql in post_file_sql:
+                run_sql(sql, connection)
         except ValueError as e:
-            print("Failed to process", file)
-            logging.exception("Failed to process %s", file)
+            print("Failed to process", filename)
+            logging.exception("Failed to process %s", filename)
 
 
 if __name__ == '__main__':
@@ -113,14 +121,14 @@ if __name__ == '__main__':
         # 'SDKTimeStamp',
 
         # ABMBrainState
-        'Classification',
-        'HighEngagement',
-        'LowEngagement',
-        'Distraction',
-        'Drowsy',
-        'WorkloadFBDS',
-        'WorkloadBDS',
-        'WorkloadAverage',
+        # 'Classification',
+        # 'HighEngagement',
+        # 'LowEngagement',
+        # 'Distraction',
+        # 'Drowsy',
+        # 'WorkloadFBDS',
+        # 'WorkloadBDS',
+        # 'WorkloadAverage',
 
         # ABMDeconEEG
         # 'Epoc (Decon)',
@@ -253,26 +261,28 @@ if __name__ == '__main__':
         # 'Gamma (26-40 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
         # 'Gamma (26-40 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
 
+        # Emotiv
+        'Stress (Epoc)',
+        'Engagement (Epoc)',
+        'Relaxation (Epoc)',
+        'Excitement (Epoc)',
+        'Interest (Epoc)'
+
     ]
     logging.debug("Using columns: %s", selected_columns)
 
     start = time.time()
     print('Began at', start)
     # Create database connection
-    db_name = "ECB_adidas_1_1.db"
+    db_file = "runner_data.db"
 
-    files = glob.glob(r"D:\Adidas 1.1\02_B_adidas 1.11 wo ToL\Experience centered baseball/*.txt")
+    files = glob.glob(r"data/runner data/*.txt")
     total = len(files)
     logging.info("Processing files: %s", files)
     for i, file in enumerate(files, start=1):
         print(f"Processing file {i}/{total} {file}")
         logging.info(f"Processing {file}")
-        process_file(file, db_name)
-    # process_file(r"D:\Adidas 1.1\02_B_adidas 1.11 wo ToL\Product-centered baseball/031_221-2_wmc_vids.txt",
-    #              db_name)
+        process_file(file, db_file)
 
-    # TODO: Refactor this to run inside `process_file`
-    conn = sqlite3.connect(db_name)
-    run_sql('sql/Participants.sql', connection=conn)
     end = time.time()
     print('Total time:', (end - start) / 60, 'minutes')

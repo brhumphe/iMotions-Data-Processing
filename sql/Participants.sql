@@ -5,7 +5,7 @@ CREATE TABLE Participants
 (
     Name      INTEGER
         CONSTRAINT Participants_eeg_Name_fk
-        REFERENCES eeg (Name),
+        REFERENCES abm_eeg (Name),
     Age       INTEGER,
     Gender    TEXT,
     StudyName TEXT
@@ -22,5 +22,5 @@ INSERT INTO Participants
         , Age
         , Gender
         , StudyName
-    FROM eeg
+    FROM abm_eeg
     ORDER BY Name

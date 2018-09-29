@@ -11,7 +11,7 @@ SELECT
   avg(WorkloadFBDS)    AS "WorkloadFBDS",
   avg(WorkloadBDS)     AS "WorkloadBDS",
   avg(WorkloadAverage) AS "WorkloadAverage"
-FROM eeg
+FROM abm_eeg
 WHERE
   PostMarker NOT NULL
 GROUP BY Name, Age, Gender, PostMarker

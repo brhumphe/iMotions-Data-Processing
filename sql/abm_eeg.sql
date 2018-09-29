@@ -1,5 +1,5 @@
 -- DROP TABLE IF EXISTS eeg;
-CREATE TABLE IF NOT EXISTS eeg (
+CREATE TABLE IF NOT EXISTS abm_eeg (
     "index"         INTEGER,
     StudyName       TEXT,
     Name            INTEGER,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS eeg (
 );
 
 
-INSERT INTO eeg
+INSERT INTO abm_eeg
     SELECT
         "index",
         StudyName,
