@@ -86,8 +86,7 @@ Process given file and saves the output to the specified database file.
     table = db[table]
     rows = skip_comments(path)
     filtered = filter_rows(rows, events, columns)
-    for row in filtered:
-        table.insert(row)
+    table.insert_many(filtered)
 
 
 if __name__ == '__main__':
