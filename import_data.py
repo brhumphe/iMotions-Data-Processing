@@ -19,8 +19,8 @@ def run_sql(sql_file, connection):
         sql_file = fd.read()
         fd.close()
         connection.executescript(sql_file)
-    except:
-        logging.exception("Failed to run %s", sql_file)
+    except Exception as e:
+        logging.exception("Failed to run %s\n%s", sql_file, e)
 
 
 def process_file(filename, db_name, columns, post_file_sql=None, post_chunk_sql=None, chunksize=100000):
@@ -246,29 +246,29 @@ if __name__ == '__main__':
         # 'SceneOutput',
         # 'SceneParent'
 
-        # Event Source AbmPsdData (?)
-        # 'Delta (1-3 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
-        # 'Delta (1-3 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
-        # 'Delta (1-3 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
-        # 'Theta (4-7 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
-        # 'Theta (4-7 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
-        # 'Theta (4-7 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
-        # 'Alpha (8-12 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
-        # 'Alpha (8-12 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
-        # 'Alpha (8-12 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
-        # 'Beta (13-25 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
-        # 'Beta (13-25 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
-        # 'Beta (13-25 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
-        # 'Gamma (26-40 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
-        # 'Gamma (26-40 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
-        # 'Gamma (26-40 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+        # ABM EEG Frontal Asymmetry
+        'Delta (1-3 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        'Delta (1-3 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        'Delta (1-3 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+        'Theta (4-7 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        'Theta (4-7 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        'Theta (4-7 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+        'Alpha (8-12 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        'Alpha (8-12 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        'Alpha (8-12 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+        'Beta (13-25 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        'Beta (13-25 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        'Beta (13-25 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
+        'Gamma (26-40 Hz) Asymmetry Log 10 F4/F3 (ABM EEG Frontal Asymmetry)',
+        'Gamma (26-40 Hz) F3 Average (ABM EEG Frontal Asymmetry)',
+        'Gamma (26-40 Hz) F4 Average (ABM EEG Frontal Asymmetry)',
 
         # Performance Metrics Epoc
-        'Stress (Epoc)',
-        'Engagement (Epoc)',
-        'Relaxation (Epoc)',
-        'Excitement (Epoc)',
-        'Interest (Epoc)'
+        # 'Stress (Epoc)',
+        # 'Engagement (Epoc)',
+        # 'Relaxation (Epoc)',
+        # 'Excitement (Epoc)',
+        # 'Interest (Epoc)'
 
     ]
     logging.debug("Using columns: %s", selected_columns)
