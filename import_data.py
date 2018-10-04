@@ -27,7 +27,7 @@ def process_file(filename, db_name, columns, post_file_sql=None, post_chunk_sql=
     if post_chunk_sql is None:
         post_chunk_sql = []
     if post_file_sql is None:
-        post_file_sql = ['sql/abm_eeg.sql', 'sql/cleanup.sql']
+        post_file_sql = [] # ['sql/abm_eeg.sql', 'sql/cleanup.sql']
 
     with sqlite3.connect(db_name) as connection:
         logging.info('Processing file %s', filename)
@@ -217,15 +217,15 @@ if __name__ == '__main__':
         # '7 Y',
 
         # GSR data
-        # 'Timestamp RAW (no units) (Shimmer Sensor)',
-        # 'Timestamp CAL (mSecs) (Shimmer Sensor)',
-        # 'VSenseBatt RAW (no units) (Shimmer Sensor)',
-        # 'VSenseBatt CAL (mVolts) (Shimmer Sensor)',
-        # 'GSR RAW (no units) (Shimmer Sensor)',
-        # 'GSR CAL (kOhms) (Shimmer Sensor)',
-        # 'GSR CAL (µSiemens) (Shimmer Sensor)',
-        # 'Packet reception rate RAW (no units) (Shimmer Sensor)',
-        # 'GSR Quality (Shimmer Sensor)',
+        'Timestamp RAW (no units) (Shimmer Sensor)',
+        'Timestamp CAL (mSecs) (Shimmer Sensor)',
+        'VSenseBatt RAW (no units) (Shimmer Sensor)',
+        'VSenseBatt CAL (mVolts) (Shimmer Sensor)',
+        'GSR RAW (no units) (Shimmer Sensor)',
+        'GSR CAL (kOhms) (Shimmer Sensor)',
+        'GSR CAL (µSiemens) (Shimmer Sensor)',
+        'Packet reception rate RAW (no units) (Shimmer Sensor)',
+        'GSR Quality (Shimmer Sensor)',
 
         # Because iMotions is stupid, sometimes Shimmer columns are not identical.
         # 'Timestamp RAW (no units) (Shimmer)',
@@ -276,15 +276,17 @@ if __name__ == '__main__':
     start = time.time()
     # print('Began at', start)
     # Create database connection
-    db_file = "runner_data.db"
+    db_file = "psd_data.db"
 
-    files = glob.glob(r"data/runner data/*.txt")
+    files = glob.glob(r"F:\adidas\sensor data\Experience BB video sensor data\high session 1 - PRE/*.txt")
     total = len(files)
     logging.info("Processing files: %s", files)
-    for i, file in enumerate(files, start=1):
+    for i, file in enumerate(files[:1], start=1):
         print(f"Processing file {i}/{total} {file}")
         logging.info(f"Processing {file}")
         process_file(file, db_file, columns=selected_columns, post_file_sql=[])
 
     end = time.time()
     print('Total time:', (end - start) / 60, 'minutes')
+
+# sample_filename =  r"F:\adidas\sensor data\WMC sensor data\low session 2 - POST\010_L106-2.txt"

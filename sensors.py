@@ -70,7 +70,7 @@ class ABMFrontalAsymmetry(EventSource):
 
     @property
     def name(self) -> str:
-        return "ABM Frontal Asymmetry"
+        return "ABM EEG Frontal Asymmetry"
 
     @property
     def dtypes(self):
