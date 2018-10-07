@@ -4,6 +4,9 @@ import time
 import pandas as pd
 import logging
 import sys
+import os.path
+
+from utils import read_events
 
 logging.basicConfig(filename="import_data.log",
                     level=logging.DEBUG,
@@ -23,11 +26,17 @@ def run_sql(sql_file, connection):
         logging.exception("Failed to run %s\n%s", sql_file, e)
 
 
-def process_file(filename, db_name, columns, post_file_sql=None, post_chunk_sql=None, chunksize=100000):
+def process_file(filename, db_name, columns, dtypes=None,
+                 pre_file_sql=None, post_file_sql=None, pre_chunk_sql=None,
+                 post_chunk_sql=None, chunksize=100000):
+    if pre_chunk_sql is None:
+        pre_chunk_sql = []
+    if pre_file_sql is None:
+        pre_file_sql = []
     if post_chunk_sql is None:
         post_chunk_sql = []
     if post_file_sql is None:
-        post_file_sql = [] # ['sql/abm_eeg.sql', 'sql/cleanup.sql']
+        post_file_sql = []  # ['sql/abm_eeg.sql', 'sql/cleanup.sql']
 
     with sqlite3.connect(db_name) as connection:
         logging.info('Processing file %s', filename)
@@ -37,9 +46,17 @@ def process_file(filename, db_name, columns, post_file_sql=None, post_chunk_sql=
             reader = pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize,
                                  comment='#', skip_blank_lines=True, usecols=columns)
 
+            for sql in pre_file_sql:
+                run_sql(sql, connection)
+
             # Iterate through file with pandas and write to database.
+            print("Reading chunks")
             for chunk in reader:
+                for sql in pre_chunk_sql:
+                    run_sql(sql, connection)
+
                 chunk.to_sql('all_raw', connection, if_exists='append')
+
                 for sql in post_chunk_sql:
                     run_sql(sql, connection)
 
@@ -217,26 +234,26 @@ if __name__ == '__main__':
         # '7 Y',
 
         # GSR data
-        'Timestamp RAW (no units) (Shimmer Sensor)',
-        'Timestamp CAL (mSecs) (Shimmer Sensor)',
-        'VSenseBatt RAW (no units) (Shimmer Sensor)',
-        'VSenseBatt CAL (mVolts) (Shimmer Sensor)',
-        'GSR RAW (no units) (Shimmer Sensor)',
-        'GSR CAL (kOhms) (Shimmer Sensor)',
-        'GSR CAL (µSiemens) (Shimmer Sensor)',
-        'Packet reception rate RAW (no units) (Shimmer Sensor)',
-        'GSR Quality (Shimmer Sensor)',
+        # 'Timestamp RAW (no units) (Shimmer Sensor)',
+        # 'Timestamp CAL (mSecs) (Shimmer Sensor)',
+        # 'VSenseBatt RAW (no units) (Shimmer Sensor)',
+        # 'VSenseBatt CAL (mVolts) (Shimmer Sensor)',
+        # 'GSR RAW (no units) (Shimmer Sensor)',
+        # 'GSR CAL (kOhms) (Shimmer Sensor)',
+        # 'GSR CAL (µSiemens) (Shimmer Sensor)',
+        # 'Packet reception rate RAW (no units) (Shimmer Sensor)',
+        # 'GSR Quality (Shimmer Sensor)',
 
         # Because iMotions is stupid, sometimes Shimmer columns are not identical.
-        # 'Timestamp RAW (no units) (Shimmer)',
-        # 'Timestamp CAL (mSecs) (Shimmer)',
-        # 'VSenseBatt RAW (no units) (Shimmer)',
-        # 'VSenseBatt CAL (mVolts) (Shimmer)',
-        # 'GSR RAW (no units) (Shimmer)',
-        # 'GSR CAL (kOhms) (Shimmer)',
-        # 'GSR CAL (µSiemens) (Shimmer)',
-        # 'Packet reception rate RAW (no units) (Shimmer)',
-        # 'GSR Quality (Shimmer)',
+        'Timestamp RAW (no units) (Shimmer)',
+        'Timestamp CAL (mSecs) (Shimmer)',
+        'VSenseBatt RAW (no units) (Shimmer)',
+        'VSenseBatt CAL (mVolts) (Shimmer)',
+        'GSR RAW (no units) (Shimmer)',
+        'GSR CAL (kOhms) (Shimmer)',
+        'GSR CAL (µSiemens) (Shimmer)',
+        'Packet reception rate RAW (no units) (Shimmer)',
+        'GSR Quality (Shimmer)',
 
         # More iMotions data. Not usually used.
         # 'LiveMarker',
@@ -278,13 +295,30 @@ if __name__ == '__main__':
     # Create database connection
     db_file = "psd_data.db"
 
-    files = glob.glob(r"F:\adidas\sensor data\Experience BB video sensor data\high session 1 - PRE/*.txt")
+    files = glob.glob(r"F:\adidas\sensor data\Experience*sensor data*\**low*\*_*.txt")
+    # files = [r"F:\adidas\sensor data\Experience all video sensor data\low session 2 - POST\001_L103.txt"]
     total = len(files)
     logging.info("Processing files: %s", files)
-    for i, file in enumerate(files[:1], start=1):
+    for i, file in enumerate(files, start=1):
         print(f"Processing file {i}/{total} {file}")
         logging.info(f"Processing {file}")
-        process_file(file, db_file, columns=selected_columns, post_file_sql=[])
+
+        # TODO: Move this into process_file
+        events = read_events(file)
+        # Alternative: if set(desired_events) - events: # Do stuff
+        if 'ABM EEG Frontal Asymmetry' not in events:
+            print('ABM EEG Frontal Asymmetry not found in', file, file=sys.stderr)
+            logging.error('ABM EEG Frontal Asymmetry not found in %s', file)
+            continue
+
+        db_name = file + ".db"
+        if not os.path.isfile(db_name):
+            process_file(file, db_name, columns=selected_columns, pre_file_sql=["sql/db_setup_psd_shimmer.sql"],
+                         post_file_sql=["sql/psd_shimmer_sensor.sql", "sql/cleanup.sql"]
+                         )
+        else:
+            print(f"File exists: {db_name}", file=sys.stderr)
+            logging.exception(f"File exists: {db_name}")
 
     end = time.time()
     print('Total time:', (end - start) / 60, 'minutes')
