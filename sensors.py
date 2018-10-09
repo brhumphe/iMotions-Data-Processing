@@ -66,7 +66,7 @@ class ABMBrainState(EventSource):
         }
 
 
-class ABMFrontalAsymmetry(EventSource):
+class ABM_EEG_FrontalAsymmetry(EventSource):
 
     @property
     def name(self) -> str:

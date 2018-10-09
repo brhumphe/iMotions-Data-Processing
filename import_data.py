@@ -6,24 +6,12 @@ import logging
 import sys
 import os.path
 
-from utils import read_events
+from utils import read_events, run_sql_file
 
 logging.basicConfig(filename="import_data.log",
                     level=logging.DEBUG,
                     format="%(levelname)s|%(asctime)s|%(message)s"
                     )
-
-
-def run_sql(sql_file, connection):
-    print("Executing ", sql_file)
-    logging.debug("Executing %s", sql_file)
-    try:
-        fd = open(sql_file, 'r', encoding='utf-8')
-        sql_file = fd.read()
-        fd.close()
-        connection.executescript(sql_file)
-    except Exception as e:
-        logging.exception("Failed to run %s\n%s", sql_file, e)
 
 
 def process_file(filename, db_name, columns, dtypes=None,
@@ -36,37 +24,34 @@ def process_file(filename, db_name, columns, dtypes=None,
     if post_chunk_sql is None:
         post_chunk_sql = []
     if post_file_sql is None:
-        post_file_sql = []  # ['sql/abm_eeg.sql', 'sql/cleanup.sql']
+        post_file_sql = []
 
     with sqlite3.connect(db_name) as connection:
         logging.info('Processing file %s', filename)
         try:
             # `usecols` speeds this up significantly. Use it.
-            # TODO: Utilize data type  argument
-            reader = pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize,
+            reader = pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize, dtype=dtypes,
                                  comment='#', skip_blank_lines=True, usecols=columns)
 
+            # TODO: Check if selected events and columns are present in the file
+
             for sql in pre_file_sql:
-                run_sql(sql, connection)
+                run_sql_file(sql, connection)
 
             # Iterate through file with pandas and write to database.
             print("Reading chunks")
             for chunk in reader:
                 for sql in pre_chunk_sql:
-                    run_sql(sql, connection)
+                    run_sql_file(sql, connection)
 
                 chunk.to_sql('all_raw', connection, if_exists='append')
 
                 for sql in post_chunk_sql:
-                    run_sql(sql, connection)
+                    run_sql_file(sql, connection)
 
             # Run post-processing scripts to filter data
-            # TODO: Check for attempts to insert data from an existing participant.
-            #       Determine which participant is being inserted. Each time a new participant name is found, check if
-            #       they are already in the database.
-            # TODO: Figure out an easy way to delete a specific participant from the database
             for sql in post_file_sql:
-                run_sql(sql, connection)
+                run_sql_file(sql, connection)
         except ValueError as e:
             print("Failed to process", filename, file=sys.stderr)
             print(e, file=sys.stderr)
@@ -75,6 +60,7 @@ def process_file(filename, db_name, columns, dtypes=None,
 
 if __name__ == '__main__':
     # This list of columns is obtained with the code in get_columns.py
+    # TODO: Replace selected_columns with sensors.py
     selected_columns = [
         # Study and participant data
         'StudyName',
