@@ -1,5 +1,7 @@
 import numpy as np
 
+# TODO: Associate sql files per-sensor?
+
 STUDY_INFO = {
     'StudyName': str,
     'ExportDate': str,
@@ -92,4 +94,10 @@ Emotient_FACET = {
     # 'Positive Intensity': np.float64,
     'Negative Evidence': np.float64,
     # 'Negative Intensity': np.float64
+}
+
+EventNames = {
+    'ABMBrainState': ABMBrainState,
+    'ABM Frontal Asymmetry': ABM_Frontal_Asymmetry,
+    'Shimmer': Shimmer
 }

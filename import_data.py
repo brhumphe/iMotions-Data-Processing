@@ -6,7 +6,7 @@ import logging
 import sys
 import os.path
 
-from utils import read_events, run_sql_file
+from utils import read_events, run_sql_file, generate_types
 
 logging.basicConfig(filename="import_data.log",
                     level=logging.DEBUG,
@@ -14,7 +14,7 @@ logging.basicConfig(filename="import_data.log",
                     )
 
 
-def process_file(filename, db_name, columns, dtypes=None,
+def process_file(filename, db_name, event_sources,
                  pre_file_sql=None, post_file_sql=None, pre_chunk_sql=None,
                  post_chunk_sql=None, chunksize=100000):
     if pre_chunk_sql is None:
@@ -29,11 +29,12 @@ def process_file(filename, db_name, columns, dtypes=None,
     with sqlite3.connect(db_name) as connection:
         logging.info('Processing file %s', filename)
         try:
-            # `usecols` speeds this up significantly. Use it.
-            reader = pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize, dtype=dtypes,
-                                 comment='#', skip_blank_lines=True, usecols=columns)
+            types = generate_types(filename, event_sources)
+            columns = list(types.keys())
 
-            # TODO: Check if selected events and columns are present in the file
+            # `usecols` speeds this up significantly. Use it.
+            reader = pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize, dtype=types,
+                                 comment='#', skip_blank_lines=True, usecols=columns)
 
             for sql in pre_file_sql:
                 run_sql_file(sql, connection)
@@ -289,17 +290,10 @@ if __name__ == '__main__':
         print(f"Processing file {i}/{total} {file}")
         logging.info(f"Processing {file}")
 
-        # TODO: Move this into process_file
-        events = read_events(file)
-        # Alternative: if set(desired_events) - events: # Do stuff
-        if 'ABM EEG Frontal Asymmetry' not in events:
-            print('ABM EEG Frontal Asymmetry not found in', file, file=sys.stderr)
-            logging.error('ABM EEG Frontal Asymmetry not found in %s', file)
-            continue
-
         db_name = file + ".db"
         if not os.path.isfile(db_name):
-            process_file(file, db_name, columns=selected_columns, pre_file_sql=["sql/db_setup_psd_shimmer.sql"],
+            process_file(file, db_name, ['ABM EEG Frontal Asymmetry'],
+                         pre_file_sql=["sql/db_setup_psd_shimmer.sql"],
                          post_file_sql=["sql/psd_shimmer_sensor.sql", "sql/cleanup.sql"]
                          )
         else:
