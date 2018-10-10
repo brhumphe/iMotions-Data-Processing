@@ -8,12 +8,12 @@ import pandas as pd
 
 from utils import *
 
-files_exp = glob.glob(r"F:\adidas\sensor data\Experience*sensor data*\**\*_*.db")
-files_pc = glob.glob(r"F:\adidas\sensor data\Product*sensor data*\**\*_*.db")
+files_exp = glob.glob(r"F:\adidas\sensor data\Experience all video sensor data\low session 1 - PRE\psd+shimmer\*.db")
+# files_pc = glob.glob(r"F:\adidas\sensor data\Product*sensor data*\**\*_*.db")
 
 # out_db = sqlite3.connect('test_combine.db')
 
-for file in files_pc:
+for file in files_exp:
     # db = sqlite3.connect(file)
 
     try:

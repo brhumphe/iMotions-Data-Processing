@@ -47,6 +47,8 @@ of types for use by pandas.read_csv
     for e in event_sources:
         types.update(EventNames[e])
 
+    logging.debug("Using types: %s", types)
+
     return types
 
 
