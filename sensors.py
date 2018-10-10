@@ -96,8 +96,62 @@ Emotient_FACET = {
     # 'Negative Intensity': np.float64
 }
 
+# Eye tracker raw data
+# 'GazeLeftx',
+# 'GazeLefty',
+# 'GazeRightx',
+# 'GazeRighty',
+
+# Eye tracker Pupil Dilation
+# 'PupilLeft',
+# 'PupilRight',
+
+# Eye tracker raw data
+# 'DistanceLeft',
+# 'DistanceRight',
+# 'CameraLeftX',
+# 'CameraLeftY',
+# 'CameraRightX',
+# 'CameraRightY',
+
+# Whether the eye is being tracked. 0 if data is valid.
+# ET Validity
+# 'ValidityLeft',
+# 'ValidityRight',
+
+# Eye tracker
+# 'GazeX',
+# 'GazeY',
+# 'GazeAOI',
+# 'InterpolatedGazeX',
+# 'InterpolatedGazeY',
+# 'GazeEventType',
+# 'GazeVelocityAngle',
+# 'SaccadeSeq',
+# 'SaccadeStart',
+# 'SaccadeDuration',
+
+# ET Fixations
+# 'FixationSeq',
+# 'FixationX',
+# 'FixationY',
+# 'FixationStart',
+# 'FixationDuration',
+# 'FixationAOI',
+ET = {
+    # 'ValidityLeft': str,
+    # 'ValidityRight': str,
+    # 'PupilLeft': np.float,
+    # 'PupilRight': np.float,
+    'FixationAOI': str,
+    # 'FixationStart': np.float,  # Double check this
+    # 'FixationDuration': np.float,
+    # 'FixationSeq': int
+}
+
 EventNames = {
     'ABMBrainState': ABMBrainState,
     'ABM Frontal Asymmetry': ABM_Frontal_Asymmetry,
-    'Shimmer': Shimmer
+    'Shimmer': Shimmer,
+    'ET': ET
 }
