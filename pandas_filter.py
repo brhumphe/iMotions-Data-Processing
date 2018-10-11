@@ -6,7 +6,7 @@ import glob
 from utils import open_file, filter_events, read_events, read_cols
 
 
-def process_file(filename, event_sources, add_types=None, chunksize=500000):
+def process_file(filename, event_sources, add_types=None, chunksize=50000):
     data = open_file(filename, event_sources, add_types=add_types, chunksize=chunksize)
     frames = []
     for chunk in data:
@@ -18,7 +18,7 @@ def process_to_csv(path, out_dir, event_sources):
     print("Cleaning ", path)
     base_name = os.path.basename(path)
     try:
-        df = process_file(path, event_sources, chunksize=50000)
+        df = process_file(path, event_sources)
 
         out_path = out_dir + os.path.splitext(base_name)[0] + '.csv'
         df[df['SlideType'] == 'TestImage'].to_csv(out_path, index=False)
