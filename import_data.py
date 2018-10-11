@@ -14,9 +14,9 @@ logging.basicConfig(filename="import_data.log",
                     )
 
 
-def process_file(filename, db_name, event_sources,
-                 pre_file_sql=None, post_file_sql=None, pre_chunk_sql=None,
-                 post_chunk_sql=None, chunksize=100000):
+def __OLD__process_file(filename, db_name, event_sources,
+                        pre_file_sql=None, post_file_sql=None, pre_chunk_sql=None,
+                        post_chunk_sql=None, chunksize=100000):
     if pre_chunk_sql is None:
         pre_chunk_sql = []
     if pre_file_sql is None:
@@ -76,10 +76,10 @@ if __name__ == '__main__':
 
         db_name = os.path.splitext(file)[0] + ".db"
         if not os.path.isfile(db_name):
-            process_file(file, db_name, ['ABM EEG Frontal Asymmetry'],
-                         pre_file_sql=["sql/db_setup_psd_shimmer.sql"],
-                         post_file_sql=["sql/psd_shimmer_sensor.sql", "sql/cleanup.sql"]
-                         )
+            __OLD__process_file(file, db_name, ['ABM EEG Frontal Asymmetry'],
+                                pre_file_sql=["sql/db_setup_psd_shimmer.sql"],
+                                post_file_sql=["sql/psd_shimmer_sensor.sql", "sql/cleanup.sql"]
+                                )
         else:
             print(f"File exists: {db_name}", file=sys.stderr)
             logging.exception(f"File exists: {db_name}")

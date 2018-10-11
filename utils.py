@@ -1,4 +1,5 @@
 import logging
+from contextlib import contextmanager
 
 import pandas as pd
 from sensors import EventNames, STUDY_INFO
@@ -7,7 +8,7 @@ from sensors import EventNames, STUDY_INFO
 def read_events(file):
     """
 Examines the first nrows of a file and returns unique event sources
-    :param file:
+    :param file: File name or file-like object compatible with `pandas.read_csv`
     :return: Set of EventSource names
     """
     df = pd.read_csv(file, sep='\t', usecols=['EventSource'], nrows=5000, comment='#')
@@ -18,8 +19,8 @@ Examines the first nrows of a file and returns unique event sources
 def read_cols(file):
     """
 Returns a list of all columns present in a file.
-    :param file:
-    :return:
+    :param file: File name or file-like object compatible with `pandas.read_csv`
+    :return: List of column names
     """
     df = pd.read_csv(file, sep='\t', nrows=1, comment='#')
     return list(df.columns)
@@ -29,7 +30,7 @@ def generate_types(file, event_sources):
     """
 Given a file and list of strings of event names as they appear in the EventSource column, creates a dict
 of types for use by pandas.read_csv
-    :param file:
+    :param file: File name or file-like object compatible with `pandas.read_csv`
     :param event_sources:
     :return:
     """
@@ -68,13 +69,24 @@ Executes the contents of sql_file on the database connection.
         logging.exception("Failed to run %s\n%s", sql_file, e)
 
 
-def open_file(filename, event_sources, chunksize=10000):
+def open_file(filename, event_sources, *, add_types=None, chunksize=10000):
+    """
+Parses a text file of data, returning only the specified columns and event sources
+    :param filename: File name or file-like object compatible with `pandas.read_csv`
+    :param event_sources: List of event names as shown in EventSource column
+    :param add_types: Additional column:dtype dict for extra columns beyond those of the supplied event sources.
+    :param chunksize: Number of rows to process per-iteration
+    :return:
+    """
+    if add_types is None:
+        add_types = {}
     types = None
     cols = None
 
     if event_sources:
-        types = generate_types(filename, event_sources)
+        types = {**generate_types(filename, event_sources), **add_types}
         cols = list(types.keys())
+
     return pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize, dtype=types,
                        comment='#', skip_blank_lines=True, usecols=cols)
 
@@ -84,7 +96,7 @@ def filter_events(df, events):
 Filters df to include only rows where EventSource includes at least one of the valid events.
     :param df:
     :param events: List of string names of event sources
-    :return:
+    :return: Filtered DataFrame
     """
     f = []
     for e in events:
