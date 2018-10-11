@@ -107,12 +107,23 @@ ET = {
     # 'FixationSeq': int
 }
 
+Epoc_Performance_Metrics = {
+    # Performance Metrics Epoc
+    'Stress (Epoc)': np.float,
+    'Engagement (Epoc)': np.float,
+    'Relaxation (Epoc)': np.float,
+    'Excitement (Epoc)': np.float,
+    'Interest (Epoc)': np.float
+}
+
 EventNames = {
     'ABMBrainState': ABMBrainState,
     'ABM EEG Frontal Asymmetry': ABM_Frontal_Asymmetry,
     'Shimmer': Shimmer,
-    'ET': ET
+    'ET': ET,
+    'Performance Metrics Epoc': Epoc_Performance_Metrics
 }
+
 # selected_columns = [
 #     # Study and participant data
 #     'StudyName',
