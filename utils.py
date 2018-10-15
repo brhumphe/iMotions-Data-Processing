@@ -91,7 +91,7 @@ Parses a text file of data, returning only the specified columns and event sourc
                        comment='#', skip_blank_lines=True, usecols=cols)
 
 
-def filter_events(df, events):
+def filter_event_source(df, events):
     """
 Filters df to include only rows where EventSource includes at least one of the valid events.
     :param df:
@@ -100,7 +100,20 @@ Filters df to include only rows where EventSource includes at least one of the v
     """
     f = []
     for e in events:
-        f.append(df['EventSource'].str.contains(e))
+        # Creates a boolean series of rows that contains event e
+        contains = df['EventSource'].str.contains(e)
+        f.append(contains)
 
+    # Logical OR of all boolean series in f
     event_rows = pd.concat(f, axis=1).any(axis=1)
+
+    # Returns only rows where event_rows == True
     return df[event_rows]
+
+
+def process_file(filename, event_sources, add_types=None, chunksize=50000):
+    data = open_file(filename, event_sources, add_types=add_types, chunksize=chunksize)
+    frames = []
+    for chunk in data:
+        frames.append(filter_event_source(chunk, event_sources))
+    return pd.concat(frames)
