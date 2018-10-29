@@ -1,17 +1,17 @@
 import logging
-from contextlib import contextmanager
-
 import pandas as pd
+
 from sensors import EventNames, STUDY_INFO
 
 
-def read_events(file):
+def read_events(file, nrows=5000):
     """
 Examines the first nrows of a file and returns unique event sources
     :param file: File name or file-like object compatible with `pandas.read_csv`
+    :param nrows: Number of rows to scan for EventSources
     :return: Set of EventSource names
     """
-    df = pd.read_csv(file, sep='\t', usecols=['EventSource'], nrows=5000, comment='#')
+    df = pd.read_csv(file, sep='\t', usecols=['EventSource'], nrows=nrows, comment='#')
     return {e for event in list(df['EventSource'])
             for e in event.split('|')}
 
@@ -76,7 +76,7 @@ Parses a text file of data, returning only the specified columns and event sourc
     :param event_sources: List of event names as shown in EventSource column
     :param add_types: Additional column:dtype dict for extra columns beyond those of the supplied event sources.
     :param chunksize: Number of rows to process per-iteration
-    :return:
+    :return: Pandas csv reader object
     """
     if add_types is None:
         add_types = {}
@@ -94,7 +94,7 @@ Parses a text file of data, returning only the specified columns and event sourc
 def filter_event_source(df, events):
     """
 Filters df to include only rows where EventSource includes at least one of the valid events.
-    :param df:
+    :param df: DataFrame to filter
     :param events: List of string names of event sources
     :return: Filtered DataFrame
     """
@@ -112,6 +112,14 @@ Filters df to include only rows where EventSource includes at least one of the v
 
 
 def process_file(filename, event_sources, add_types=None, chunksize=50000):
+    """
+Processes a file and returns a DataFrame of the cleaned data
+    :param filename:
+    :param event_sources: List of strings of EventSource names
+    :param add_types: Additional columns to include and their dtype
+    :param chunksize: Rows to process per batch
+    :return: Resulting DataFrame
+    """
     data = open_file(filename, event_sources, add_types=add_types, chunksize=chunksize)
     frames = []
     for chunk in data:
