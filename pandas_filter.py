@@ -12,6 +12,7 @@ def process_to_csv(path, out_dir, event_sources, add_types=None):
         df = process_file(path, event_sources, add_types=add_types)
 
         out_path = out_dir + os.path.splitext(base_name)[0] + '.csv'
+        # TODO: Move this test up into main filter function
         df[df['SlideType'] == 'TestImage'].to_csv(out_path, index=False)
     except ValueError as e:
         print("Could not process ", path, file=sys.stderr)
@@ -24,12 +25,14 @@ if __name__ == '__main__':
     from multiprocessing import Pool
     from functools import partial
 
-    destination_dir = "out/ecomm_control+scarce/"
-    events = ['ABMBrainState']
+    destination_dir = "out/ecom- control/"
+    events = ['ABM EEG Frontal Asymmetry', 'ABMBrainState']
 
-    add_columns = {'FixationAOI': str}
+    add_columns = None  # {'FixationAOI': str}
 
-    files = glob.glob("data/ecomm_control+scarce/*.txt")
+    files = glob.glob("data/ecom- control/*.txt")
+    # for file in files:
+    #     process_to_csv(file, out_dir=destination_dir, event_sources=events, add_types=add_columns)
     func = partial(process_to_csv, out_dir=destination_dir, event_sources=events,
                    add_types=add_columns)
 

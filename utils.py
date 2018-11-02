@@ -101,6 +101,8 @@ Filters df to include only rows where EventSource includes at least one of the v
     f = []
     for e in events:
         # Creates a boolean series of rows that contains event e
+        # Building and using a boolean index to filter rows avoids unnecessary copies and is
+        # much more efficient than creating new copies after each filter.
         contains = df['EventSource'].str.contains(e)
         f.append(contains)
 
@@ -123,5 +125,9 @@ Processes a file and returns a DataFrame of the cleaned data
     data = open_file(filename, event_sources, add_types=add_types, chunksize=chunksize)
     frames = []
     for chunk in data:
-        frames.append(filter_event_source(chunk, event_sources))
+        filtered_events = filter_event_source(chunk, event_sources)
+
+        # This makes a new copy. Refactor so it doesn't.
+        filtered_classification = filtered_events[filtered_events['Classification'] > 0]
+        frames.append(filtered_classification)
     return pd.concat(frames)
