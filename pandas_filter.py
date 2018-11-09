@@ -25,18 +25,18 @@ if __name__ == '__main__':
     from multiprocessing import Pool
     from functools import partial
 
-    destination_dir = "out/ecom- control/"
-    events = ['ABM EEG Frontal Asymmetry', 'ABMBrainState']
+    destination_dir = "out/subsets for AR experience/"
+    events = ['Performance Metrics Epoc']
 
     add_columns = None  # {'FixationAOI': str}
 
-    files = glob.glob("data/ecom- control/*.txt")
-    # for file in files:
-    #     process_to_csv(file, out_dir=destination_dir, event_sources=events, add_types=add_columns)
-    func = partial(process_to_csv, out_dir=destination_dir, event_sources=events,
-                   add_types=add_columns)
-
-    pool = Pool(2)  # Leave at 1 if IO bound to reduce read contention on disk
-    pool.map(func, files)
-    pool.close()
-    pool.join()
+    files = glob.glob("data/subsets for AR experience/*.txt")
+    for file in files:
+        process_to_csv(file, out_dir=destination_dir, event_sources=events, add_types=add_columns)
+    # func = partial(process_to_csv, out_dir=destination_dir, event_sources=events,
+    #                add_types=add_columns)
+    #
+    # pool = Pool(1)  # Leave at 1 if IO bound to reduce read contention on disk
+    # pool.map(func, files)
+    # pool.close()
+    # pool.join()

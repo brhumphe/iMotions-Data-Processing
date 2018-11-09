@@ -126,8 +126,10 @@ Processes a file and returns a DataFrame of the cleaned data
     frames = []
     for chunk in data:
         filtered_events = filter_event_source(chunk, event_sources)
+        frames.append(filtered_events)
 
+        # TODO: Move this filtering logic somewhere else.
         # This makes a new copy. Refactor so it doesn't.
-        filtered_classification = filtered_events[filtered_events['Classification'] > 0]
-        frames.append(filtered_classification)
+        # filtered_classification = filtered_events[filtered_events['Classification'] > 0]
+        # frames.append(filtered_classification)
     return pd.concat(frames)
