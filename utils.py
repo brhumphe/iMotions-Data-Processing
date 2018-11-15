@@ -132,4 +132,5 @@ Processes a file and returns a DataFrame of the cleaned data
         # This makes a new copy. Refactor so it doesn't.
         # filtered_classification = filtered_events[filtered_events['Classification'] > 0]
         # frames.append(filtered_classification)
-    return pd.concat(frames)
+    df = pd.concat(frames)
+    return df[df['SlideType'] == 'TestImage']

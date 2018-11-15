@@ -20,9 +20,9 @@ inclusion rules.
 
     :param df: Dataframe to filter
     :type df: pd.DataFrame
-    :param include:
+    :param include: List of rules for determining which rows should be included
     :type include: List[FilterRule]
-    :param exclude:
+    :param exclude: List fo rules for determining which rows should be excluded. Exclusions override inclusions.
     :type exclude: List[FilterRule]
     :param columns: List of columns to include. None returns all columns
     :return:

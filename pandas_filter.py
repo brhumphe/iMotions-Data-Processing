@@ -6,6 +6,13 @@ from utils import read_events, read_cols, process_file
 
 
 def process_to_csv(path, out_dir, event_sources, add_types=None):
+    """
+Process file and saves results to CSV in output directory.
+    :param path:
+    :param out_dir:
+    :param event_sources:
+    :param add_types:
+    """
     print("Cleaning ", path)
     base_name = os.path.basename(path)
     try:
