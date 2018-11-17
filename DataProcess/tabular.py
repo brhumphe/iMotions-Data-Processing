@@ -90,7 +90,7 @@ Process given file and saves the output to the specified database file.
 
 
 if __name__ == '__main__':
-    # file_path = 'sample_data/059_230.txt'
+    # file_path = 'sample_data/ABM.txt'
     files = glob.glob("D:\\Adidas 1.1\\adidas 1.11\\WMC\*.txt")
     outdir = 'out/'
     selected_columns = [
