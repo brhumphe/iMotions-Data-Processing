@@ -5,3 +5,5 @@ venv/
 *.db
 out/
 *.log
+
+__pycache__/
