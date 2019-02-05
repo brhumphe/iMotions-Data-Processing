@@ -32,12 +32,12 @@ if __name__ == '__main__':
     from multiprocessing import Pool
     from functools import partial
 
-    destination_dir = "out/subsets for AR experience/general/"
-    events = ['Performance Metrics Epoc']
+    destination_dir = "sample_data/cleaned/"
+    events = ['Shimmer Sensor Shimmer Sensor', 'ET', ]
 
     add_columns = None  # {'FixationAOI': str}
 
-    files = glob.glob("data/subsets for AR experience/general/*.txt")
+    files = ["sample_data/ET_Emotiv_FACET_Shimmer.txt"]
     for file in files:
         process_to_csv(file, out_dir=destination_dir, event_sources=events, add_types=add_columns)
     # func = partial(process_to_csv, out_dir=destination_dir, event_sources=events,

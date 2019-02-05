@@ -120,6 +120,8 @@ EventNames = {
     'ABMBrainState': ABMBrainState,
     'ABM EEG Frontal Asymmetry': ABM_Frontal_Asymmetry,
     'Shimmer': Shimmer,
+    'Shimmer Sensor': Shimmer_Sensor,
+    'Shimmer Sensor Shimmer Sensor': Shimmer_Sensor,
     'ET': ET,
     'Performance Metrics Epoc': Epoc_Performance_Metrics
 }
