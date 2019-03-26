@@ -11,7 +11,7 @@ Examines the first nrows of a file and returns unique event sources
     :param nrows: Number of rows to scan for EventSources
     :return: Set of EventSource names
     """
-    df = pd.read_csv(file, sep='\t', usecols=['EventSource'], nrows=nrows, comment='#')
+    df = pd.read_csv(file, sep='\t', usecols=['EventSource'], nrows=nrows, skiprows=6)
     return {e for event in list(df['EventSource'])
             for e in event.split('|')}
 
@@ -22,7 +22,7 @@ Returns a list of all columns present in a file.
     :param file: File name or file-like object compatible with `pandas.read_csv`
     :return: List of column names
     """
-    df = pd.read_csv(file, sep='\t', nrows=1, comment='#')
+    df = pd.read_csv(file, sep='\t', nrows=1, skiprows=6, encoding='utf-8')
     return list(df.columns)
 
 
@@ -88,7 +88,7 @@ Parses a text file of data, returning only the specified columns and event sourc
         cols = list(types.keys())
 
     return pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize, dtype=types,
-                       comment='#', skip_blank_lines=True, usecols=cols)
+                       skiprows=6, skip_blank_lines=True, usecols=cols)
 
 
 def filter_event_source(df, events):

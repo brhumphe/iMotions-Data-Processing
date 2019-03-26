@@ -1,6 +1,5 @@
 import numpy as np
 
-# TODO: Associate sql files per-sensor?
 
 STUDY_INFO = {
     'StudyName': str,
@@ -109,11 +108,69 @@ ET = {
 
 Epoc_Performance_Metrics = {
     # Performance Metrics Epoc
-    'Stress (Epoc)': np.float,
-    'Engagement (Epoc)': np.float,
-    'Relaxation (Epoc)': np.float,
-    'Excitement (Epoc)': np.float,
-    'Interest (Epoc)': np.float
+    'Stress (Epoc)': np.float64,
+    'Engagement (Epoc)': np.float64,
+    'Relaxation (Epoc)': np.float64,
+    'Excitement (Epoc)': np.float64,
+    'Interest (Epoc)': np.float64
+}
+
+Performance_Metrics_Emotiv_Cortex = {
+    'Interest (Emotiv Cortex)': np.float64,
+    'Stress (Emotiv Cortex)': np.float64,
+    'Relaxation (Emotiv Cortex)': np.float64,
+    'Excitement (Emotiv Cortex)': np.float64,
+    'Engagement (Emotiv Cortex)': np.float64,
+    'Long term excitement (Emotiv Cortex)': np.float64,
+    'Focus (Emotiv Cortex)': np.float64
+}
+
+Motion_Emotiv_Cortex = {
+    'GYROX (Emotiv Cortex)': np.float64,
+    'GYROY (Emotiv Cortex)': np.float64,
+    'GYROZ (Emotiv Cortex)': np.float64,
+    'ACCX (Emotiv Cortex)': np.float64,
+    'ACCY (Emotiv Cortex)': np.float64,
+    'ACCZ (Emotiv Cortex)': np.float64,
+    'MAGX (Emotiv Cortex)': np.float64,
+    'MAGY (Emotiv Cortex)': np.float64,
+    'MAGZ (Emotiv Cortex)': np.float64
+}
+
+Affdex_Raw = {
+    'Number of faces': np.float64,
+    # 'width': np.float64,
+    # 'height': np.float64,
+    # 'FrameIndex': np.float64,
+    # 'faceid': np.float64,
+    # '#classifiers': np.float64,
+    # 'Brow Furrow': np.float64,
+    # 'Brow Raise': np.float64,
+    'Engagement': np.float64,
+    # 'Lip Corner Depressor': np.float64,
+    'Smile': np.float64,
+    'Valence': np.float64,
+    'Attention': np.float64,
+    # 'Interocular Distance': np.float64,
+    # 'Pitch': np.float64,
+    # 'Yaw': np.float64,
+    # 'Roll': np.float64,
+    # 'InnerBrowRaise': np.float64,
+    # 'EyeClosure': np.float64,
+    # 'NoseWrinkle': np.float64,
+    # 'UpperLipRaise': np.float64,
+    # 'LipSuck': np.float64,
+    # 'LipPress': np.float64,
+    # 'MouthOpen': np.float64,
+    # 'ChinRaise': np.float64,
+    # 'Smirk': np.float64,
+    # 'LipPucker': np.float64,
+    'Anger': np.float64,
+    'Sadness': np.float64,
+    'Disgust': np.float64,
+    'Joy': np.float64,
+    'Surprise': np.float64,
+    'Fear': np.float64,
 }
 
 EventNames = {
@@ -123,7 +180,10 @@ EventNames = {
     'Shimmer Sensor': Shimmer_Sensor,
     'Shimmer Sensor Shimmer Sensor': Shimmer_Sensor,
     'ET': ET,
-    'Performance Metrics Epoc': Epoc_Performance_Metrics
+    'Performance Metrics Epoc': Epoc_Performance_Metrics,
+    'Performance Metrics Emotiv Cortex': Performance_Metrics_Emotiv_Cortex,
+    'Motion Emotiv Cortex': Motion_Emotiv_Cortex,
+    'AffRaw': Affdex_Raw
 }
 
 # selected_columns = [

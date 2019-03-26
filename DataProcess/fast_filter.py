@@ -1,13 +1,4 @@
-# Given a data frame we need to return only the desired subset
-# according to a user-specified list of rules. To maintain performance,
-# each filter will return a boolean index, and the boolean indices assembled
-# into the final boolean index which will determine the output data frame.
-from typing import Callable, List
 import pandas as pd
-
-# A FilterRule should return a boolean index denoting which rows of the dataframe
-# should be included.
-FilterRule = Callable[[pd.DataFrame], pd.Series]
 
 
 def fast_filter(df, include=None, exclude=None, columns=None) -> pd.DataFrame:
