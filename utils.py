@@ -11,7 +11,8 @@ Examines the first nrows of a file and returns unique event sources
     :param nrows: Number of rows to scan for EventSources
     :return: Set of EventSource names
     """
-    df = pd.read_csv(file, sep='\t', usecols=['EventSource'], nrows=nrows, skiprows=6)
+    df = pd.read_csv(file, sep='\t', usecols=['EventSource'], nrows=nrows, #skiprows=6
+                     )
     return {e for event in list(df['EventSource'])
             for e in event.split('|')}
 
@@ -22,7 +23,8 @@ Returns a list of all columns present in a file.
     :param file: File name or file-like object compatible with `pandas.read_csv`
     :return: List of column names
     """
-    df = pd.read_csv(file, sep='\t', nrows=1, skiprows=6, encoding='utf-8')
+    df = pd.read_csv(file, sep='\t', nrows=1, #skiprows=6,
+                     encoding='utf-8')
     return list(df.columns)
 
 
@@ -88,7 +90,8 @@ Parses a text file of data, returning only the specified columns and event sourc
         cols = list(types.keys())
 
     return pd.read_csv(filename, sep='\t', encoding='utf-8', chunksize=chunksize, dtype=types,
-                       skiprows=6, skip_blank_lines=True, usecols=cols)
+                       # skiprows=6,
+                       skip_blank_lines=True, usecols=cols)
 
 
 def filter_event_source(df, events):
@@ -128,9 +131,13 @@ Processes a file and returns a DataFrame of the cleaned data
         filtered_events = filter_event_source(chunk, event_sources)
         frames.append(filtered_events)
 
-        # TODO: Move this filtering logic somewhere else.
-        # This makes a new copy. Refactor so it doesn't.
-        # filtered_classification = filtered_events[filtered_events['Classification'] > 0]
-        # frames.append(filtered_classification)
     df = pd.concat(frames)
-    return df[df['SlideType'] == 'TestImage']
+    # return df[df['SlideType'] == 'TestImage']
+
+    # Apply a series of filters to data
+    # This might be more efficient if done per-chunk in the above loop instead of at the end. Oh well.
+    v_left = df['ValidityLeft'] == 0
+    v_right = df['ValidityRight'] == 0
+    slides = df['SlideType'] == 'TestImage'
+
+    return df[pd.concat([v_left, v_right, slides], axis=1).all(axis=1)]

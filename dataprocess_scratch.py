@@ -1,11 +1,6 @@
-import utils
 from DataProcess.filter import Filter
-from DataProcess.sensors import Affdex
+from DataProcess.sensors import ET
 
-path = "data/adidas runners S2/001_307.txt"
-print(utils.read_cols(path))
-print(utils.read_events(path))
+file_path = 'data/nyc_sept18/003_217c.txt'
+et_filter = Filter([ET])
 
-affdex_filter = Filter([Affdex])
-data = utils.open_file(path, ['AffRaw'])
-print(affdex_filter.filter(next(data)))

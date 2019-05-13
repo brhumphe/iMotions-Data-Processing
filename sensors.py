@@ -96,14 +96,42 @@ Emotient_FACET = {
 }
 
 ET = {
-    # 'ValidityLeft': str,
-    # 'ValidityRight': str,
-    # 'PupilLeft': np.float,
-    # 'PupilRight': np.float,
+    'ValidityLeft': np.float,
+    'ValidityRight': np.float,
+    'PupilLeft': np.float,
+    'PupilRight': np.float,
+    'FixationX': np.float,
+    'FixationY': np.float,
     'FixationAOI': str,
-    # 'FixationStart': np.float,  # Double check this
-    # 'FixationDuration': np.float,
-    # 'FixationSeq': int
+    'FixationStart': np.float,  # Double check this
+    'FixationDuration': np.float,
+    'FixationSeq': np.float,
+    'AccX': np.float,
+    'AccY': np.float,
+    'AccZ': np.float,
+    'GyroX': np.float,
+    'GyroY': np.float,
+    'GyroZ': np.float,
+    'Gaze3DX': np.float,
+    'Gaze3DY': np.float,
+    'Gaze3DZ': np.float,
+    'Distance3D': np.float,
+    'GazeDirectionLeftX': np.float,
+    'GazeDirectionLeftY': np.float,
+    'GazeDirectionLeftZ': np.float,
+    'GazeDirectionRightX': np.float,
+    'GazeDirectionRightY': np.float,
+    'GazeDirectionRightZ': np.float,
+    'GazeX': np.float,
+    'GazeY': np.float,
+    'GazeAOI': np.float,
+    'InterpolatedGazeX': np.float,
+    'InterpolatedGazeY': np.float,
+    'GazeEventType': np.float,
+    'GazeVelocityAngle': np.float,
+    'SaccadeSeq': np.float,
+    'SaccadeStart': np.float,
+    'SaccadeDuration': np.float,
 }
 
 Epoc_Performance_Metrics = {
