@@ -135,7 +135,7 @@ Processes a file and returns a DataFrame of the cleaned data
     # return df[df['SlideType'] == 'TestImage']
 
     # Apply a series of filters to data
-    # This might be more efficient if done per-chunk in the above loop instead of at the end. Oh well.
+    # This may or may not be more efficient if done per-chunk in the above loop instead of at the end. Oh well.
     v_left = df['ValidityLeft'] == 0
     v_right = df['ValidityRight'] == 0
     slides = df['SlideType'] == 'TestImage'
