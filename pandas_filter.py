@@ -30,25 +30,27 @@ Process file and saves results to CSV in output directory.
 
 
 if __name__ == '__main__':
-    from multiprocessing import Pool
-    from functools import partial
-
+    # See `sensors.py` for sensor definitions
     events = ['ET', ]
 
+    # Columns and their types not specified in `sensors.py`
     add_columns = {'UTCTimestamp': str,
                    'MediaTime': np.float,
                    'TimeSignal': np.float,
                    }  # {'FixationAOI': str}
     # add_columns = None
     files = glob.glob('data/nyc flagship store/*')
-    # files = ['data/nyc flagship store/nyc flagship store/001_103.txt']
     destination_dir = "out/nyc flagship store ET cleaned/"
-    # for file in files:
-    #     process_to_csv(file, out_dir=destination_dir, event_sources=events, add_types=add_columns)
-    func = partial(process_to_csv, out_dir=destination_dir, event_sources=events,
-                   add_types=add_columns)
+    for file in files:
+        process_to_csv(file, out_dir=destination_dir, event_sources=events, add_types=add_columns)
 
-    pool = Pool(4)  # Leave at 1 if IO bound (I.E. not using an SSD) to reduce read contention on disk
-    pool.map(func, files)
-    pool.close()
-    pool.join()
+    # Uncomment the following to speed up processing if you have the data on an SSD.
+    # from multiprocessing import Pool
+    # from functools import partial
+    # func = partial(process_to_csv, out_dir=destination_dir, event_sources=events,
+    #                add_types=add_columns)
+
+    # pool = Pool(4)  # Leave at 1 if IO bound (I.E. not using an SSD) to reduce read contention on disk
+    # pool.map(func, files)
+    # pool.close()
+    # pool.join()

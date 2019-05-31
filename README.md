@@ -41,9 +41,14 @@ It's worth re-reading the last paragraph one or two more times, because it's imp
 row matter and which are just duplicates.
 
 # Cleaning Data
-
+The file `pandas_filter.py` has working code for cleaning files. I recommend finishing up the `DataProcess` module and 
+using those functions, but in the meantime the code there will suffice. Sensors are defined in `sensors.py`. Note that
+data types should be defined using numpy.float64 for any numeric types. 
 
 # This Repository
 This repository has code that I have actively used to do the first-pass processing of file for many research
 studies. This process has evolved over 1.5 years to the form you see now, but it is not all that polished because it was
 only ever written for me to get the most immediate job done.
+
+I recommend using PyCharm to work on this code, because it is awesome. You can import this project into PyCharm with the
+instructions here: https://www.jetbrains.com/help/pycharm/manage-projects-hosted-on-github.html
