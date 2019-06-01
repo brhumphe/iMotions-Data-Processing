@@ -72,4 +72,4 @@ I recommend using PyCharm to work on this code, because it is awesome. You can i
 instructions here: https://www.jetbrains.com/help/pycharm/manage-projects-hosted-on-github.html
 
 This project relies upon `pandas`, a powerful library for Python. Review the following to avoid making severe performance
-mistakes: https://www.youtube.com/watch?v=4JwpDGrMsJE&list=PLB-iOhOaPYindAFJPEQOFyzbSxqMZNwKF&index=12&t=0s
+mistakes: https://youtu.be/4JwpDGrMsJE
