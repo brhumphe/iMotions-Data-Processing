@@ -120,9 +120,9 @@ def process_file(filename, event_sources, add_types=None, chunksize=50000):
     """
 Processes a file and returns a DataFrame of the cleaned data
     :param filename:
-    :param event_sources: List of strings of EventSource names
+    :param event_sources: List of strings of EventSource names. Only rows with these sources will be included
     :param add_types: Additional columns to include and their dtype
-    :param chunksize: Rows to process per batch
+    :param chunksize: Number of rows to process per batch
     :return: Resulting DataFrame
     """
     data = open_file(filename, event_sources, add_types=add_types, chunksize=chunksize)
@@ -134,8 +134,9 @@ Processes a file and returns a DataFrame of the cleaned data
     df = pd.concat(frames)
     # return df[df['SlideType'] == 'TestImage']
 
-    # Apply a series of filters to data
-    # This may or may not be more efficient if done per-chunk in the above loop instead of at the end. Oh well.
+    # Apply a series of filters to data.
+    # NOTE: This may or may not be more efficient if done per-chunk in the above loop instead of at the end. Oh well.
+    # TODO: Modify the following to apply any filters to the event sources.
     v_left = df['ValidityLeft'] == 0
     v_right = df['ValidityRight'] == 0
     slides = df['SlideType'] == 'TestImage'

@@ -41,14 +41,35 @@ It's worth re-reading the last paragraph one or two more times, because it's imp
 row matter and which are just duplicates.
 
 # Cleaning Data
-The file `pandas_filter.py` has working code for cleaning files. I recommend finishing up the `DataProcess` module and 
-using those functions, but in the meantime the code there will suffice. Sensors are defined in `sensors.py`. Note that
-data types should be defined using numpy.float64 for any numeric types. 
+Cleaning a file involves:
+ 1. Removing rows which do not contain a relevant EventSource
+ 2. Removing irrelevant columns
+ 3. Removing rows with invalid data (**SEE NEXT SECTION**)
+
+# **_A WARNING ABOUT MULTIPLE EVENT SOURCES_** 
+If multiple event sources are included, you need to figure out how to handle cases where two events are included in a
+row and one event has valid data and the other one does not. This is another fundamental problem with the tabular text 
+format. The only true solution to this is to properly normalize the data into a database for further processing. 
+**_Only using this code as a first-pass cleaning to reduce file size before importing into a database!_** 
 
 # This Repository
 This repository has code that I have actively used to do the first-pass processing of file for many research
 studies. This process has evolved over 1.5 years to the form you see now, but it is not all that polished because it was
 only ever written for me to get the most immediate job done.
 
+The file `pandas_filter.py` has working code for cleaning files. I recommend finishing up the `DataProcess` module and 
+using those functions, but in the meantime the code there will suffice. The primary function that actually performs
+the data cleaning is called `process_file` in `utils.py`. Any custom filtering logic will need to be manually added to 
+this function, and modified depending on the events being cleaned. `process_file` accepts a list of event sources and
+looks up the columns names and types from `sensors.py`, returning a filtered pandas DataFrame. Note that data types 
+should be defined using numpy.float64 for any numeric types. 
+
+The `DataProcess` module addresses the issue of having to constantly modify the filtering code by adding filtering rules
+to the sensor definitions, but it still a WIP. It does not, however, solve the problem of removing invalid data when 
+filtering for multiple event sources.
+
 I recommend using PyCharm to work on this code, because it is awesome. You can import this project into PyCharm with the
 instructions here: https://www.jetbrains.com/help/pycharm/manage-projects-hosted-on-github.html
+
+This project relies upon `pandas`, a powerful library for Python. Review the following to avoid making severe performance
+mistakes: https://www.youtube.com/watch?v=4JwpDGrMsJE&list=PLB-iOhOaPYindAFJPEQOFyzbSxqMZNwKF&index=12&t=0s
